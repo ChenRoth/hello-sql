@@ -17,6 +17,7 @@ let pool;
 
 
 router.get('/', async (req, res) => {
+    console.log('test', req.test);
     const [results, fields] = await pool.execute(`SELECT * FROM Movies`);
     // line 13 is equivalent to this:
     // const arr = await connection.execute(`SELECT * FROM Movies`);
