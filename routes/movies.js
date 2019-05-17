@@ -2,18 +2,22 @@ const mysql = require('mysql2/promise');
 const express = require('express');
 const router = express.Router();
 
-async function getConnection() {
-    return mysql.createConnection({
+let pool;
+(async function initializePool() {
+    pool = await mysql.createPool({
         host: 'localhost',
         user: 'root',
         password: '123456',
-        database: 'cinemaville'
+        database: 'cinemaville',
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
     });
-}
+})();
+
 
 router.get('/', async (req, res) => {
-    const connection = await getConnection();
-    const [results, fields] = await connection.execute(`SELECT * FROM Movies`);
+    const [results, fields] = await pool.execute(`SELECT * FROM Movies`);
     // line 13 is equivalent to this:
     // const arr = await connection.execute(`SELECT * FROM Movies`);
     // const results = arr[0];
@@ -23,10 +27,9 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    const connection = await getConnection();
     const { id } = req.params;
     try {
-        const [results, fields] = await connection.execute(`SELECT * FROM Movies WHERE id = ${id}`);
+        const [results, fields] = await pool.execute(`SELECT * FROM Movies WHERE id = ${id}`);
 
         if (results.length) {
             res.send(results[0]);
