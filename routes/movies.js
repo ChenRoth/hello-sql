@@ -2,14 +2,17 @@ const mysql = require('mysql2/promise');
 const express = require('express');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-    const connection = await mysql.createConnection({
+async function getConnection() {
+    return mysql.createConnection({
         host: 'localhost',
         user: 'root',
         password: '123456',
         database: 'cinemaville'
     });
+}
 
+router.get('/', async (req, res) => {
+    const connection = await getConnection();
     const [results, fields] = await connection.execute(`SELECT * FROM Movies`);
     // line 13 is equivalent to this:
     // const arr = await connection.execute(`SELECT * FROM Movies`);
@@ -20,13 +23,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    const connection = await mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: '123456',
-        database: 'cinemaville'
-    });
-
+    const connection = await getConnection();
     const { id } = req.params;
     try {
         const [results, fields] = await connection.execute(`SELECT * FROM Movies WHERE id = ${id}`);
