@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const [results, fields] = await pool.execute(`SELECT * FROM Movies WHERE id = ${id}`);
+        const [results, fields] = await pool.execute(`SELECT * FROM Movies WHERE id = ?`, [id]);
 
         if (results.length) {
             res.send(results[0]);
@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
             .status(400)
             .send('expected title in request');
     }
-    const [results] = await pool.execute(`INSERT INTO Movies (title) VALUES ('${title}')`);
+    const [results] = await pool.execute(`INSERT INTO Movies (title) VALUES (?)`, [title]);
     if (results.insertId) {
         res.send({ id: results.insertId });
     } else {
