@@ -28,15 +28,21 @@ router.get('/:id', async (req, res) => {
     });
 
     const { id } = req.params;
-    const [results, fields] = await connection.execute(`SELECT * FROM Movies WHERE id = ${id}`);
-    if (results.length) {
-        res.send(results[0]);
-    } else {
-        res
-            .status(404)
-            .send(`movie ${id} doesn't exist`);
-    }
+    try {
+        const [results, fields] = await connection.execute(`SELECT * FROM Movies WHERE id = ${id}`);
 
+        if (results.length) {
+            res.send(results[0]);
+        } else {
+            res
+                .status(404)
+                .send(`movie ${id} doesn't exist`);
+        }
+    } catch (e) {
+        res
+            .status(500)
+            .send('something has gone wrong! :(');
+    }
 });
 
 module.exports = router;
