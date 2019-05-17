@@ -19,5 +19,24 @@ router.get('/', async (req, res) => {
     res.send(results);
 });
 
+router.get('/:id', async (req, res) => {
+    const connection = await mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: '123456',
+        database: 'cinemaville'
+    });
+
+    const { id } = req.params;
+    const [results, fields] = await connection.execute(`SELECT * FROM Movies WHERE id = ${id}`);
+    if (results.length) {
+        res.send(results[0]);
+    } else {
+        res
+            .status(404)
+            .send(`movie ${id} doesn't exist`);
+    }
+
+});
 
 module.exports = router;
