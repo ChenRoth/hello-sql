@@ -45,4 +45,24 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+router.post('/', async (req, res) => {
+    const { title } = req.body;
+    if (!title) {
+        res
+            .status(400)
+            .send('expected title in request');
+    }
+    const [results] = await pool.execute(`INSERT INTO Movies (title) VALUES ('${title}')`);
+    if (results.insertId) {
+        res.send({ id: results.insertId });
+    } else {
+        res
+            .status(500)
+            .send('something went wrong');
+    }
+
+});
+
+
+
 module.exports = router;
