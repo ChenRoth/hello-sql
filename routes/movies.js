@@ -64,6 +64,12 @@ router.post('/', async (req, res) => {
 
 });
 
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    await pool.execute(`DELETE FROM Movies WHERE id = ?`, [id]);
+    res.status(200).send(`${id} has been deleted`);
+});
+
 
 
 module.exports = router;
