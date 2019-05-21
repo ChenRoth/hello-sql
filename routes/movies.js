@@ -66,8 +66,12 @@ router.post('/', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
-    await pool.execute(`DELETE FROM Movies WHERE id = ?`, [id]);
-    res.status(200).send(`${id} has been deleted`);
+    const [results] = await pool.execute(`DELETE FROM Movies WHERE id = ?`, [id]);
+    if (results.affectedRows) {
+        res.status(200).send({ success: true });
+    } else {
+        res.status(404).send({ success: false });
+    }
 });
 
 
